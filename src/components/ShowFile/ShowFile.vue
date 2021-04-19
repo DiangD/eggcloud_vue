@@ -605,8 +605,9 @@ export default {
     return {
       currentFolder: 0,
       pathList: [
-        {'folder': '', 'id': ''},
+        {'folder': ''},
       ],
+      path: this.$route.query.path,
       contextMenuDisabled: false,
       renameFilename: '',
       showNewFolder: false,
@@ -769,24 +770,17 @@ export default {
       this.vmode = this.$route.query.vmode
       this.grid = this.vmode !== 'list';
     }
-    // 加载currentFolderId
-    if (this.$route.query.folder) {
-      this.currentFolder = this.$route.query.folder
-      if (this.currentFolder !== 0) {
-        api.folderPrePath({
-          userId: this.$store.getters.userId,
-          folderId: this.currentFolder
-        }).then(res => {
-          let dirs = res.data
-          if (dirs.length <= 0) {
-            return
-          }
-          for (let dir of dirs) {
-            let item = {'folder': dir.name, 'id': dir.id}
-            this.pathList.push(item)
-          }
-        })
-      }
+    // 加载url上的path
+    if (this.$route.query.path !== '/') {
+      const path = decodeURI(this.$route.query.path)
+      this.pathList.splice(1, 1)
+      path.split('/').forEach((pathName, index) => {
+        if (index > 0) {
+          const item = {}
+          item['folder'] = pathName
+          this.pathList.push(item)
+        }
+      })
     }
     let that = this
     window.onresize = function () {
@@ -914,7 +908,7 @@ export default {
     // 浏览器的返回事件
     goBack() {
       if (this.pathList.length === 2) {
-        this.$router.push(`/?vmode=${this.vmode}&folder=${this.currentFolder}`)
+        this.$router.push(`/?vmode=${this.vmode}&path=${encodeURIComponent(this.path)}`)
         return
       }
       const linkIndex = this.pathList.length - 3
@@ -935,17 +929,17 @@ export default {
         this.pathList.splice(this.pathList.findIndex((v, i) => i === index + 1), this.pathList.length - (index + 1))
         this.pathList.forEach((p, number) => {
           if (number === 0) {
-            this.currentFolder = 0
+            this.path = ''
           } else if (number === this.pathList.length) {
           } else {
-            this.currentFolder = this.pathList[number].id
+            this.path += '/' + this.pathList[number].folder
           }
         })
         if (!unPushLink) {
           if (!this.$route.query.folder) {
-            this.$router.push(`?vmode=${this.vmode}&folder=${this.currentFolder}`)
+            this.$router.push(`?vmode=${this.vmode}&path=${encodeURIComponent(this.path)}`)
           } else {
-            this.$router.push(`?vmode=${this.vmode}&folder=${this.currentFolder}`)
+            this.$router.push(`?vmode=${this.vmode}&path=${encodeURIComponent(this.path)}`)
           }
         }
         if (!unRefresh) {
@@ -1423,7 +1417,7 @@ export default {
       if (!this.path) {
         this.path = ''
       }
-      this.$router.push(`?vmode=${this.vmode}&folder=${this.currentFolder}`)
+      this.$router.push(`?vmode=${this.vmode}&path=${this.path}`)
       // // 改变拖拽目标
       this.rowDrop()
       // // 画矩形选取
@@ -1485,7 +1479,8 @@ export default {
       this.beforeLoadData(onLoad)
       api.fileList({
         userId: this.$store.state.user.userId,
-        folderId: this.queryFileType ? null : this.currentFolder,
+        // folderId: this.queryFileType ? null : this.currentFolder,
+        currentDirectory: this.$route.query.path,
         queryFileType: this.queryFileType,
         sortProp: this.sortable.prop,
         sortOrder: this.sortable.order,
@@ -1826,17 +1821,21 @@ export default {
           item['folder'] = row.name
           item['search'] = true
           item['row'] = row
-          item['id'] = row.id
           this.pathList.push(item)
           this.pagination.pageIndex = 1
           this.$router.push(`?vmode=${this.vmode}&search-file=${row.id}`)
           this.searchFileAndOpenDir(row)
         } else {
-          this.currentFolder = row.id
-          const item = {'folder': row.name, 'id': row.id}
+          if (this.path) {
+            this.path += '/' + row.name
+          } else {
+            this.path = '/' + row.name
+          }
+          const item = {'folder': row.name}
           this.pathList.push(item)
           this.pagination.pageNum = 1
-          this.$router.push(`?vmode=${this.vmode}&folder=${this.currentFolder}`)
+          const path = encodeURIComponent(this.path);
+          this.$router.push(`?vmode=${this.vmode}&path=${path}`)
           this.openDir(row, false)
         }
       } else {
@@ -1900,12 +1899,13 @@ export default {
       this.beforeLoadData(onLoad)
       api.fileList({
         userId: this.$store.getters.userId,
-        folderId: row.id,
+        currentDirectory: this.$route.query.path,
         pageNum: this.pagination.pageNum,
         pageSize: this.pagination.pageSize
       }).then(res => {
         this.loadData(res.data, onLoad)
       })
+      this.path = row.path + row.name
     },
     // 更多操作(多选)
     moreOperation(event) {
@@ -2085,10 +2085,11 @@ export default {
           return;
         }
         this.newFolderLoading = true
+        console.log(this.path)
         api.newFolder({
           isFolder: true,
           name: this.newFolderName,
-          parentId: this.currentFolder,
+          path: this.path,
           userId: this.$store.state.user.userId
         }).then((res) => {
           if (res.data) {
@@ -2220,7 +2221,7 @@ export default {
       }
       api.queryFolderTree({
         userId: this.$store.getters.userId,
-        parentId: node.data.id
+        parentId: fileId
       }).then(res => {
         const nextNodes = res.data
         return resolve(nextNodes)
@@ -2236,8 +2237,12 @@ export default {
               <input type="text" autocomplete="on" value="新建文件夹" id="treeInput" class="el-input__inner"/>
             </div>
             <button type="button" on-click={() => {
+              let path='/'
               let parentData = node.parent.data
-              let treeInput = document.getElementById('treeInput')
+              if (parentData.path) {
+                path = parentData.path + parentData.name + path
+              }
+              let treeInput = document.getElementById('treeInput');
               let filename = treeInput.value
               if (filename.indexOf("新建文件夹") === -1) {
                 console.log(filename);
@@ -2247,7 +2252,7 @@ export default {
               api.newFolder({
                 isFolder: true,
                 name: data.name,
-                parentId: parentData.id,
+                path: path,
                 userId: this.$store.state.user.userId
               }).then((res) => {
                 data.newFolder = false
@@ -2337,13 +2342,17 @@ export default {
       if (operating === 'move') {
         operation = '移动'
       }
+      let selectNodePath = '/'
+      if (this.selectTreeNode.path) {
+        selectNodePath = this.selectTreeNode.path + this.selectTreeNode.name + "/"
+      }
       let fileIds = [];
       let selectId = this.selectTreeNode.id
       if (this.menusIsMultiple || this.selectRowData.length > 1) {
         const exits = this.$refs.fileListTable.tableSelectData.some(value => {
           fileIds.push(value.id)
-          const thisParentId = value.parentId
-          if (thisParentId === selectId) {
+          const thisParentPath = value.path
+          if (thisParentPath === selectNodePath) {
             this.$message({
               message: '不能将文件' + operation + '到自身或其子目录下',
               type: 'warning'
@@ -2410,11 +2419,10 @@ export default {
       if (key) {
         this.beforeLoadData(onLoad)
         const item1 = {}
-        this.pathList = [{'folder': '', 'id': ''}]
+        this.pathList = [{'folder': ''}]
         item1['folder'] = '搜索: ' + '"' + key + '"'
         item1['search'] = true
         item1['searchKey'] = key
-        item1['id'] = ''
         this.pathList.push(item1)
         this.$router.push(`?vmode=${this.vmode}&search-file=${key}`)
         api.searchFile({
@@ -2434,9 +2442,10 @@ export default {
     },
     searchFileAndOpenDir(row, onLoad) {
       this.beforeLoadData(onLoad)
-      api.fileList({
+      api.searchFileAndOpenDir({
         userId: this.$store.state.user.userId,
         folderId: row.id,
+        currentDirectory: this.$route.query.path,
         pageNum: this.pagination.pageNum,
         pageSize: this.pagination.pageSize
       }).then(res => {
@@ -2444,7 +2453,7 @@ export default {
         this.listModeSearch = true
         this.listModeSearchOpenDir = row
       })
-      this.currentFolder = row.id
+      this.path = row.path + row.name
     },
     gridItemHover(item, index) {
       this.gridHoverItemIndex = index;
