@@ -34,6 +34,11 @@ export default {
     window.open(url, '_self')
   },
 
+  packageDownload: function (userId, fileIds, token) {
+    let url = `${this.baseUrl}/ff/packageDownload?userId=${userId}&fileIds=${fileIds}&token=${token}`
+    window.open(url, '_self')
+  },
+
   publicDownloadUrl: function (accessKey) {
     return `${this.baseUrl}/s/public/download/${accessKey}}`
   },

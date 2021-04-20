@@ -2237,7 +2237,7 @@ export default {
               <input type="text" autocomplete="on" value="新建文件夹" id="treeInput" class="el-input__inner"/>
             </div>
             <button type="button" on-click={() => {
-              let path='/'
+              let path = '/'
               let parentData = node.parent.data
               if (parentData.path) {
                 path = parentData.path + parentData.name + path
@@ -2563,7 +2563,29 @@ export default {
       return fileConfig.thumbnailUrl(this.$store.state.user.userId, file, this.$store.state.user.token);
     },
     downloadFile() {
-
+      let fileIds = []
+      if (this.$refs.fileListTable.tableSelectData.length > 0) {
+        this.$refs.fileListTable.tableSelectData.forEach(value => {
+          fileIds.push(value.id)
+        })
+      } else {
+        fileIds.push(this.rowContextData.id)
+      }
+      if (fileIds.length > 0) {
+        if (fileIds.length > 1 || this.rowContextData.isFolder) {
+          fileConfig.packageDownload(this.$store.getters.userId, fileIds, this.$store.state.user.token);
+          return;
+        }
+        fileConfig.download(this.$store.getters.userId, this.rowContextData, this.$store.getters.token)
+      } else {
+        this.$message({
+          message: '未选择文件',
+          type: 'warning'
+        })
+      }
+    },
+    download(file) {
+      fileConfig.download(this.$store.getters.userId, file, this.$store.getters.token)
     }
   },
 }
