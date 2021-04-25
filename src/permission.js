@@ -6,7 +6,7 @@ import {isAuth} from "./utils/auth" // 进度条样式
 
 NProgress.configure({showSpinner: false})
 
-const whiteList = ['/login', '/register', '/share']
+const whiteList = ['/login', '/register', '/s']
 
 function findPath(menuList, to, parentPath) {
   for (let i = 0; i < menuList.length; i++) {
@@ -34,7 +34,7 @@ function setMenuList(next, to) {
       if (findPath(res.data, to)) {
         next(window.location.pathname + window.location.search)
       } else {
-        if (to.path !== '/share') {
+        if (to.path !== '/s') {
           next(window.location.pathname + window.location.search)
         } else {
           next({path: store.getters.menuList[0].path})

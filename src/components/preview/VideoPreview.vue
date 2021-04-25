@@ -43,7 +43,7 @@ export default {
         return {}
       }
     },
-    shareId: {
+    accessKey: {
       type: String,
       default: undefined
     },
@@ -96,11 +96,13 @@ export default {
     status: function (visible) {
       if (visible) {
         let url = fileConfig.previewUrl(this.$store.getters.userId, this.file, this.$store.getters.token)
-        //todo share
+        if (this.accessKey) {
+          url = fileConfig.publicPreviewUrl(this.accessKey, this.file.id)
+        }
         this.playerOptions.sources = [{
           type: this.file.contentType,
           src: url
-        }]
+        }];
         this.show = true
       }
     }

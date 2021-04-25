@@ -92,10 +92,9 @@ export default {
           if (index < findIndex + 5 && index > findIndex - 5) {
             if (!element.isFolder && element.contentType && element.contentType.startsWith('image')) {
               let url = fileConfig.previewUrl(this.$store.state.user.userId, element, this.$store.getters.token)
-              if(this.accessKey){
-               // url = fileConfig.publicPreviewUrl(element.id, window.shareId);
+              if (this.accessKey) {
+                url = fileConfig.publicPreviewUrl(window.accessKey, element.id);
               }
-             // let url = element.url
               this.images.push(url)
               if (this.file.id === element.id) {
                 viewIndex = this.images.length - 1

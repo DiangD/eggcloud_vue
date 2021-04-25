@@ -72,7 +72,7 @@ service.interceptors.response.use(
               duration: 1000
             })
           }
-          break
+          return res
         }
       }
       return Promise.reject()

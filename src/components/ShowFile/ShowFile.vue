@@ -445,6 +445,47 @@
 
     <image-viewer :fileList="fileList" :file="imagePreviewRow" :status.sync="imagePreviewVisible"></image-viewer>
     <VideoPreview :file="videoPreviewRow" :status.sync="videoPreviewVisible"></VideoPreview>
+    <el-drawer
+      :title="rowContextData.name"
+      :visible.sync="drawer">
+      <div class="drawer-icon">
+        <icon-file class="drawer-icon-font" :grid="true" :details="true" :item="rowContextData"></icon-file>
+      </div>
+      <el-form class="details-form">
+        <el-form-item label="名称:">
+          <span>{{ rowContextData.name }}</span>
+        </el-form-item>
+        <el-form-item label="类型:" class="details-name">
+          <span>{{ rowContextData.isFolder ? '文件夹' : rowContextData.contentType }}</span>
+        </el-form-item>
+        <div v-if="rowContextData.music">
+          <el-form-item label="🎵 歌手:">
+            <span>{{ rowContextData.music.singer }}</span>
+          </el-form-item>
+          <el-form-item label="🎵 专辑:">
+            <span>{{ '《'+rowContextData.music.album+'》' }}</span>
+          </el-form-item>
+          <el-form-item label="🎵 歌名:">
+            <span>{{ '《'+rowContextData.music.songName+'》' }}</span>
+          </el-form-item>
+        </div>
+        <el-form-item v-show="rowContextData.w && rowContextData.h" label="分辨率:" class="details-resolution">
+          <span>{{ rowContextData.w + ' x ' + rowContextData.h }}</span>
+        </el-form-item>
+        <el-form-item label="大小:">
+          <span> {{ rowContextData.size }}字节 {{ rowContextData.size > 0 ? '(' + formatSize(rowContextData.size) + ')' : '' }}</span>
+        </el-form-item>
+        <el-form-item label="位置:" class="details-position">
+          <a :href="'/?path='+rowContextData.path">{{ rowContextData.path }}</a>
+        </el-form-item>
+        <el-form-item label="创建时间:">
+          <span>{{ rowContextData.createAt }}</span>
+        </el-form-item>
+        <el-form-item label="修改时间:">
+          <span>{{ rowContextData.modifyAt }}</span>
+        </el-form-item>
+      </el-form>
+    </el-drawer>
   </div>
 </template>
 
@@ -704,8 +745,8 @@ export default {
       imagePreviewVisible: false,
       videoPreviewRow: {},
       videoPreviewVisible: false,
-
-      notPreviewDialogVisible: false
+      notPreviewDialogVisible: false,
+      drawer:false
     }
   },
   computed: {
@@ -2498,10 +2539,6 @@ export default {
         } else {
           row = this.$refs.fileListTable.tableSelectData[0]
         }
-      }
-      if (row.isFolder) {
-        this.$message.warning('暂时不支持分享文件夹');
-        return;
       }
       this.shareFilename = row.name
       this.fileShareForm.fileId = row.id

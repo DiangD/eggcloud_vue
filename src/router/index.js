@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
+import Layout from '@/layout/index'
 Vue.use(Router)
 
 
@@ -14,6 +14,17 @@ export const constantRoutes = [
     path: '/register',
     component: require('@/views/index/register').default,
     hidden: true
+  },
+  {
+    path: '/s',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        name: 's',
+        component: () => import('@/views/public/share/shareList'),
+      }
+    ]
   },
   {
     path: '/404',

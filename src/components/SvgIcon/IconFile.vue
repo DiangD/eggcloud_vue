@@ -40,9 +40,9 @@ export default {
       type: Boolean,
       default: false
     },
-    public: {
-      type: Boolean,
-      default: false
+    accessKey: {
+      type: String,
+      default: '',
     },
     item: {
       type: Object,
@@ -76,7 +76,10 @@ export default {
       // e.preventDefault()
     },
     thumbnail(file) {
-      return fileConfig.thumbnailUrl(this.$store.state.user.userId, file, this.$store.state.user.token)
+      if (this.accessKey && this.accessKey !== '') {
+        return fileConfig.publicThumbnailUrl(this.accessKey,file);
+      }
+      return fileConfig.thumbnailUrl(this.$store.state.user.userId, file, this.$store.state.user.token);
     }
   }
 }

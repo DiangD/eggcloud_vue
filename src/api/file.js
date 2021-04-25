@@ -120,31 +120,45 @@ export default {
       }
     })
   },
-  deletedFileList:function (params) {
+  deletedFileList: function (params) {
     return request({
-      url:'ff/trash/list',
-      method:'get',
+      url: 'ff/trash/list',
+      method: 'get',
       params
     })
   },
-  removeFile:function (params) {
+  removeFile: function (params) {
     return request({
-      url:'ff/remove',
-      method:'delete',
+      url: 'ff/remove',
+      method: 'delete',
       params,
       paramsSerializer: function (params) {
         return qs.stringify(params, {arrayFormat: 'repeat'})
       }
     })
   },
-  restoreFile:function (params) {
+  restoreFile: function (params) {
     return request({
-      url:'ff/restore',
-      method:'post',
+      url: 'ff/restore',
+      method: 'post',
       params,
       paramsSerializer: function (params) {
         return qs.stringify(params, {arrayFormat: 'repeat'})
       }
+    })
+  },
+  accessShare: function (params) {
+    return request({
+      url: 's/public',
+      method: 'get',
+      params,
+    })
+  },
+  accessShareOpenDir: function (params) {
+    return request({
+      url: 's/public/dir',
+      method: 'get',
+      params
     })
   }
 }

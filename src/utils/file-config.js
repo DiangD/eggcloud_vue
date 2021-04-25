@@ -29,6 +29,10 @@ export default {
     return `${this.baseUrl}/thumbnail/${userId}/${fileId}`
   },
 
+  publicThumbnailUrl: function (accessKey, file) {
+    return `${this.baseUrl}/public/thumbnail/${accessKey}/${file.id}`
+  },
+
   download: function (userId, file, token) {
     const url = `${this.baseUrl}/ff/download/${userId}/${file.id}?token=${token}`
     window.open(url, '_self')
@@ -39,11 +43,22 @@ export default {
     window.open(url, '_self')
   },
 
-  publicDownloadUrl: function (accessKey) {
-    return `${this.baseUrl}/s/public/download/${accessKey}}`
+  publicDownloadUrl: function (accessKey, file) {
+    return window.location.origin +`${this.baseUrl}/s/public/download?accessKey=${accessKey}&fileId=${file.id}`
   },
   publicDownload: function (accessKey, file) {
-    let url = this.publicDownloadUrl(accessKey);
+    let url = this.publicDownloadUrl(accessKey, file);
     window.open(url, '_self')
+  },
+  publicPackageDownloadUrl: function (accessKey, fileIds) {
+    return window.location.origin +`${this.baseUrl}/s/public/packageDownload?accessKey=${accessKey}&fileIds=${fileIds}`
+  },
+
+  publicPackageDownload: function (accessKey, fileIds) {
+    let url = this.publicPackageDownloadUrl(accessKey,fileIds)
+    window.open(url, '_self')
+  },
+  publicPreviewUrl:function (accessKey,fileId) {
+    return `${this.baseUrl}/public/preview?accessKey=${accessKey}&fileId=${fileId}`
   }
 }
