@@ -30,6 +30,7 @@ import {mapGetters} from 'vuex'
 import '@/utils/number'
 import {formatSize} from "@/utils/number";
 import api from '@/api/store'
+import {isAuth}from '@/utils/auth'
 
 export default {
   name: "Sidebar",
@@ -54,7 +55,8 @@ export default {
       'sidebar',
       'username',
       'nickname',
-      'userDetail'
+      'userDetail',
+      'token'
     ]),
     routes() {
       let routes = []
@@ -97,14 +99,16 @@ export default {
     }
   },
   mounted() {
-    api.storeDetail({
-      userId: this.$store.state.user.userId,
-    }).then(res => {
-      if (res.data) {
-        this.size = res.data.size
-        this.occupy = res.data.occupy
-      }
-    })
+    if (isAuth()) {
+      api.storeDetail({
+        userId: this.$store.state.user.userId,
+      }).then(res => {
+        if (res.data) {
+          this.size = res.data.size
+          this.occupy = res.data.occupy
+        }
+      });
+    }
   },
   methods: {
     expandSpaceReq() {
