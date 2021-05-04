@@ -97,6 +97,10 @@ Vue.use(APlayer, {
   productionTip: false, // 是否在控制台输出版本信息
 });
 
+import uploader from 'vue-simple-uploader'
+Vue.use(uploader)
+
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

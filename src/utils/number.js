@@ -100,3 +100,21 @@ export function formatExpireAt(expireAt) {
     return parseInt(diff / (3600 * 24 * 30 * 12)) + '年'
   }
 }
+
+/**
+ * formatNetSpeed
+ * @param {*} size
+ */
+export function formatNetSpeed(size) {
+  if (size === 0) {
+    return '0B/s'
+  } else if (size < 1024) {
+    return size + 'B/s'
+  } else if (size < 1024 * 1024) {
+    return (size/1024).toFixed(2) + 'KB/s'
+  } else if (size < 1024 * 1024 * 1024) {
+    return (size/(1024 * 1024)).toFixed(2) + 'MB/s'
+  } else {
+    return (size/(1024 * 1024 * 1024)).toFixed(2) + 'GB/s'
+  }
+}

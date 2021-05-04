@@ -10,6 +10,7 @@
     </div>
     <!--全局音乐播放 -->
     <AudioPreview></AudioPreview>
+    <global-uploader></global-uploader>
   </div>
 </template>
 
@@ -21,6 +22,7 @@ import ResizeMixin from './mixin/ResizeHandler'
 import {getToken} from "@/utils/auth";
 import AudioPreview from "@/components/preview/AudioPreview";
 import VideoPreview from "@/components/preview/VideoPreview";
+import GlobalUploader from "@/components/SimpleUploader/globalUploader";
 
 export default {
   name: "Layout",
@@ -29,7 +31,8 @@ export default {
     Navbar,
     Sidebar,
     AppMain,
-    AudioPreview
+    AudioPreview,
+    GlobalUploader
   },
   data() {
     return {

@@ -35,7 +35,6 @@ export default {
         },
         {label: '刷新', operation: 'refresh'},
         {divider: true, operation: 'divider'},
-        {label: '写文章', operation: 'createMarkdownFile'},
         {label: '新建文件', operation: 'createTextFile'},
       ]
     }

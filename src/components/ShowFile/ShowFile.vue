@@ -48,7 +48,7 @@
                         @click="showNewFolderClick" @after-leave="hideNewFolderName">
               <div class="newFileMenu" style="display: block;">
                 <ul>
-                  <li>
+                  <li @click="upload">
                     <label class="menuitem">
                       <svg-icon icon-class="file-upload"/>
                       <span class="menuitem text">{{ singleFileType !== '' ? singleFileType : '上传文件' }}</span>
@@ -60,12 +60,12 @@
                       <span class="menuitem text">上传文件夹</span>
                     </label>
                   </li>
-                  <li v-if="singleFileType === ''">
-                    <a href="#" class="menuitem">
-                      <svg-icon icon-class="md"/>
-                      <span class="menuitem text">写文章</span>
-                    </a>
-                  </li>
+<!--                  <li v-if="singleFileType === ''">-->
+<!--                    <a href="#" class="menuitem">-->
+<!--                      <svg-icon icon-class="md"/>-->
+<!--                      <span class="menuitem text">写文章</span>-->
+<!--                    </a>-->
+<!--                  </li>-->
                   <li v-if="singleFileType === ''">
                     <a href="#" class="menuitem" @click.prevent="newFolder">
                       <svg-icon icon-class="folder-add"/>
@@ -2623,6 +2623,15 @@ export default {
     },
     download(file) {
       fileConfig.download(this.$store.getters.userId, file, this.$store.getters.token)
+    },
+    upload() {
+      // 打开文件选择框
+      Bus.$emit('openUploader', {
+        // 传入的参数
+        currentDirectory: this.path,
+        username: this.$store.state.user.name,
+        userId: this.$store.state.user.userId
+      })
     }
   },
 }
