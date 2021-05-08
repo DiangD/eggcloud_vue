@@ -1,32 +1,18 @@
-import request from "@/utils/request";
+import request from "@/utils/request"
 
 const qs = require('qs')
 
 export default {
-  menuTree(params) {
+  taskList(params) {
     return request({
-      url: '/u/menus',
-      method: 'get',
-      params
-    })
-  },
-  menuList(params) {
-    return request({
-      url: '/menu/list',
-      method: 'get',
-      params
-    })
-  },
-  allMenu(params) {
-    return request({
-      url: '/menu/all',
+      url: '/task/list',
       method: 'get',
       params
     })
   },
   add(params) {
     return request({
-      url: '/menu/add',
+      url: '/task/add',
       method: 'post',
       params,
       paramsSerializer: function (params) {
@@ -36,7 +22,7 @@ export default {
   },
   update(params) {
     return request({
-      url: '/menu/edit',
+      url: '/task/edit',
       method: 'post',
       params,
       paramsSerializer: function (params) {
@@ -44,21 +30,34 @@ export default {
       }
     })
   },
-  delete(params) {
+  status(params) {
     return request({
-      url: '/menu/delete',
+      url: '/task/status',
+      method: 'post',
+      params,
+      paramsSerializer: function (params) {
+        return qs.stringify(params)
+      }
+    })
+  },
+  run(params) {
+    return request({
+      url: '/task/run',
+      method: 'post',
+      params,
+      paramsSerializer: function (params) {
+        return qs.stringify(params)
+      }
+    })
+  },
+  deleteTask(params) {
+    return request({
+      url: '/task/delete',
       method: 'delete',
       params,
       paramsSerializer: function (params) {
         return qs.stringify(params, {arrayFormat: 'repeat'})
       }
-    })
-  },
-  permissions(params) {
-    return request({
-      url: '/menu/permission',
-      method: 'get',
-      params
     })
   }
 }

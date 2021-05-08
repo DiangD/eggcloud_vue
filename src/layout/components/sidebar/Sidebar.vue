@@ -56,8 +56,12 @@ export default {
       'username',
       'nickname',
       'userDetail',
-      'token'
+      'token',
+      "userDetail"
     ]),
+    hasStore() {
+      return this.userDetail.storeId
+    },
     routes() {
       let routes = []
       if (this.$route.meta.menuType === 0) {
@@ -99,7 +103,7 @@ export default {
     }
   },
   mounted() {
-    if (isAuth()) {
+    if (isAuth()||this.hasStore) {
       api.storeDetail({
         userId: this.$store.state.user.userId,
       }).then(res => {

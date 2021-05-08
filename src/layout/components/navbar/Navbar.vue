@@ -168,6 +168,7 @@ import Breadcrumb from '@/components/Breadcrumb'
 import api from '@/api/user'
 import {getToken} from "@/utils/auth"
 import SparkMD5 from 'spark-md5'
+import {isExternal} from "@/utils/validate";
 
 export default {
   name: "Navbar",
