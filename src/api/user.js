@@ -15,7 +15,7 @@ export default {
   },
   register(params) {
     return request({
-      url: 'register',
+      url: '/register',
       method: 'post',
       params,
       paramsSerializer: function (params) {
@@ -38,6 +38,9 @@ export default {
       method: 'post',
       params: {
         "username": username
+      },
+      paramsSerializer: function (params) {
+        return qs.stringify(params)
       }
     })
   },
@@ -75,5 +78,5 @@ export default {
         return qs.stringify(params)
       }
     })
-  }
+  },
 }

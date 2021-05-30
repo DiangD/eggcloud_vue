@@ -330,8 +330,12 @@ export default {
     deleteTask(ids) {
       taskApi.deleteTask({
         taskIds: ids
-      }).then(() => {
-        this.onSuccess('删除成功!')
+      }).then((res) => {
+        if (res.status === 200) {
+          this.onSuccess('删除成功!');
+        }else {
+          this.onError()
+        }
       }).catch(() => {
         this.onError()
       })

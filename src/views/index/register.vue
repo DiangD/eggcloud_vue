@@ -27,7 +27,7 @@
           <el-col :span="18">
             <el-form-item prop="email">
               <span class="email-svg-container"><svg-icon icon-class="email"/></span>
-              <el-input v-model="registerForm.email" placeholder="邮箱" type="email"></el-input>
+              <el-input v-model="registerForm.email" placeholder="邮箱" clearable type="email"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -52,7 +52,8 @@
           <el-input v-model="registerForm.confirmPassword" placeholder="重复密码" type="password"></el-input>
         </el-form-item>
         <div class="button-block">
-          <el-button type="primary" style="width: 100%" @click="handleRegister" @keydown.enter="handleRegister">提交</el-button>
+          <el-button type="primary" style="width: 100%" @click="handleRegister" @keydown.enter="handleRegister">提交
+          </el-button>
         </div>
         <div class="button-block">
           <el-button style="width: 100%" @click="gotoLoginPage">回到登录</el-button>
@@ -70,29 +71,31 @@ export default {
   name: "register",
   components: {LoginHeader},
   data() {
-    const validatorUsername = (rule, value, callback) => {
+    const validatorUsername = async (rule, value, callback) => {
       if (value === '') {
-        return callback(new Error('请输入用户名'))
+        callback(new Error('请输入用户名'))
       }
       if (value.length < 4 || value.length > 10) {
-        return callback(new Error('用户名长度为4-10'))
+        callback(new Error('用户名长度为4-10'))
       }
       let regExp = /^[a-zA-Z0-9_-]{4,16}$/
       if (!regExp.test(value)) {
-        return callback(new Error('用户名不可包含中文以及特殊字符'))
+        callback(new Error('用户名不可包含中文以及特殊字符'))
       }
-      if (this.verifyUsername(value)) {
-        return callback(new Error('用户名已存在'))
+      if (await this.verifyUsername(value)) {
+        callback(new Error('用户名已存在'))
       }
+      callback();
     }
     const validatorEmail = (rule, value, callback) => {
       if (value === '') {
-        return callback(new Error('请输入邮箱'))
+        callback(new Error('请输入邮箱'))
       }
       let regExp = /^((?!\.)[\w-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/
       if (!regExp.test(value)) {
-        return callback(new Error('邮箱格式错误'))
+        callback(new Error('邮箱格式错误'))
       }
+      callback()
     }
     const validatePass = (rule, value, callback) => {
       if (value === '') {
@@ -143,28 +146,32 @@ export default {
       })
       if (pass) {
         userApi.getVerifyCode(this.registerForm.email).then(res => {
-          this.$message.success('验证码发送成功！')
+          if (res.status === 200) {
+            this.$message.success('验证码发送成功！');
+          }
         }).catch(e => {
           console.log(e)
         })
       }
     },
     handleRegister() {
-      this.$refs['registerForm'].validate((valid) => {
+      this.$refs.registerForm.validate((valid) => {
         if (valid) {
-          userApi.register(this.registerForm).then(res => {
+          userApi.register(this.registerForm).then(() => {
             this.$message.success('注册成功！')
             setTimeout(this.gotoLoginPage(), 4000)
           })
         }
       })
     },
-    verifyUsername(username) {
-      userApi.isExistUsername(username).then(res => {
+    async verifyUsername(username) {
+      let response = await userApi.isExistUsername(username).then(res => {
         return res.data
-      }).catch(() => {
-      })
-    }
+      });
+      console.log("response:" + response)
+      return response
+    },
+
   }, mounted() {
 
   }

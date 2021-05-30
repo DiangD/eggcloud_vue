@@ -1028,7 +1028,6 @@ export default {
           }
         })
       }
-      // 加载顶部的排序下拉框
     },
     // 画矩形选区
     drawRectangle() {
@@ -1516,7 +1515,6 @@ export default {
       this.fileListScrollTop = 0
     },
     getFileList(onLoad) {
-      console.log(this.queryFileType)
       this.beforeLoadData(onLoad)
       api.fileList({
         userId: this.$store.state.user.userId,

@@ -301,8 +301,12 @@ export default {
       })
     },
     deleteRole(ids) {
-      roleApi.delete({roleIds: ids}).then(() => {
-        this.onSuccess('删除成功!')
+      roleApi.delete({roleIds: ids}).then((res) => {
+        if (res.status === 200) {
+          this.onSuccess('删除成功!');
+        }else {
+          this.onError()
+        }
       }).catch(() => {
         this.onError()
       })
